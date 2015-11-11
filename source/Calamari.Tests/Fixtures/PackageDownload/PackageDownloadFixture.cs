@@ -14,7 +14,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
     [TestFixture]
     public class PackageDownloadFixture : CalamariFixture
     {
-        
+
         const string FeedUriEnvironmentVariable = "CALAMARI_AUTHFEED";
         const string FeedUsernameEnvironmentVariable = "CALAMARI_AUTHUSERNAME";
         const string FeedPasswordEnvironmentVariable = "CALAMARI_AUTHPASSWORD";
@@ -28,9 +28,9 @@ namespace Calamari.Tests.Fixtures.PackageDownload
         static readonly string FeedPassword = Environment.GetEnvironmentVariable(FeedPasswordEnvironmentVariable);
         static readonly string ExpectedPackageHash = "40d78a00090ba7f17920a27cc05d5279bd9a4856";
         static readonly long ExpectedPackageSize = 6346;
-        static readonly Feed PublicFeed = new Feed() { Id = "feeds-myget", Version = "1.0.0.0", PackageId =  "OctoConsole" };
+        static readonly Feed PublicFeed = new Feed() { Id = "feeds-myget", Version = "1.0.0.0", PackageId = "OctoConsole" };
         static readonly Feed FileShare = new Feed() { Id = "feeds-local", Version = "1.0.0.0", PackageId = "Acme.Web" };
-        static readonly Feed AuthFeed = new Feed() { Id = "feeds-authmyget", PackageId =  "OctoConsole", Version = "1.0.0.0" };
+        static readonly Feed AuthFeed = new Feed() { Id = "feeds-authmyget", PackageId = "OctoConsole", Version = "1.0.0.0" };
 
         [SetUp]
         public void SetUp()
@@ -185,7 +185,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 result.AssertOutput("Package {0} {1} successfully downloaded from feed: '{2}'", FileShare.PackageId, FileShare.Version, acmeWeb.DirectoryPath);
             }
         }
-  
+
         [Test]
         public void FileShareFeedShouldUsePackageFromCache()
         {
@@ -338,7 +338,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
             string feedPassword = "",
             bool forcePackageDownload = false)
         {
-            var calamari = new ArgumentBuilder()
+            var calamari = Calamari()
                 .Action("download-package")
                 .Argument("packageId", packageId)
                 .Argument("packageVersion", packageVersion)
@@ -354,7 +354,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
             if (forcePackageDownload)
                 calamari.Flag("forcePackageDownload");
 
-            return Invoke2(calamari);
+            return Invoke(calamari);
 
         }
 

@@ -25,8 +25,6 @@ namespace Calamari.Tests.Helpers
             get { return exitCode; }
         }
 
-        public CaptureCommandOutput CapturedOutput { get { return captured; } }
-
         public void AssertZero()
         {
             var capturedErrors = string.Join(Environment.NewLine, captured.Errors);

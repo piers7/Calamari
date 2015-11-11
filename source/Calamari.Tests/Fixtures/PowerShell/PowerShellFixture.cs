@@ -15,9 +15,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldCallHello()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "Hello.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "Hello.ps1"));
 
             output.AssertZero();
             output.AssertOutput("Hello!");
@@ -26,9 +24,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldCaptureAllOutput()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "Output.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "Output.ps1"));
 
             output.AssertNonZero();
             output.AssertOutput("Hello, write-host!");
@@ -41,9 +37,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldCreateArtifacts()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "CanCreateArtifact.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "CanCreateArtifact.ps1"));
 
             output.AssertZero();
             output.AssertOutput("##octopus[createArtifact path='QzpcUGF0aFxGaWxlLnR4dA==' name='RmlsZS50eHQ=' length='MA==']");
@@ -52,9 +46,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldAllowDotSourcing()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "CanDotSource.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "CanDotSource.ps1"));
 
             output.AssertZero();
             output.AssertOutput("Hello!");
@@ -106,9 +98,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldFailOnInvalid()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "Invalid.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "Invalid.ps1"));
 
             output.AssertNonZero();
             output.AssertErrorOutput("A positional parameter cannot be found that accepts");
@@ -117,9 +107,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldFailOnInvalidSyntax()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "InvalidSyntax.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "InvalidSyntax.ps1"));
 
             output.AssertNonZero();
             output.AssertErrorOutput("ParserError");
@@ -140,10 +128,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
 
             using (new TemporaryFile(variablesFile))
             {
-                var output = Invoke(Calamari()
-                   .Action("run-script")
-                   .Argument("script", GetFixtureResouce("Scripts", "PrintVariables.ps1"))
-                   .Argument("variables", variablesFile));
+                var output = RunScript(GetFixtureResouce("Scripts", "PrintVariables.ps1"), variablesFile);
 
                 output.AssertZero();
                 output.AssertOutput("V1= ABC");
@@ -165,10 +150,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
 
             using (new TemporaryFile(variablesFile))
             {
-                var output = Invoke(Calamari()
-                   .Action("run-script")
-                   .Argument("script", GetFixtureResouce("Scripts", "UseModule.ps1"))
-                   .Argument("variables", variablesFile));
+                var output = RunScript(GetFixtureResouce("Scripts", "UseModule.ps1"), variablesFile);
 
                 output.AssertZero();
                 output.AssertOutput("Hello from module!");
@@ -178,9 +160,7 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldPing()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "Ping.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts", "Ping.ps1"));
 
             output.AssertZero();
             output.AssertOutput("Pinging ");
@@ -189,12 +169,22 @@ namespace Calamari.Tests.Fixtures.PowerShell
         [Test]
         public void ShouldExecuteWhenPathContainsSingleQuote()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts\\Path With '", "PathWithSingleQuote.ps1")));
+            var output = RunScript(GetFixtureResouce("Scripts\\Path With '", "PathWithSingleQuote.ps1"));
 
             output.AssertZero();
             output.AssertOutput("Hello from a path containing a '");
+        }
+
+        private CalamariResult RunScript(string scriptName, string variables = null)
+        {
+            var argBuilder = new ArgumentBuilder()
+                .Action("run-script")
+                .Argument("script", scriptName);
+            if (!string.IsNullOrWhiteSpace(variables))
+            {
+                argBuilder = argBuilder.Argument("variables", variables);
+            }
+            return Invoke2(argBuilder);
         }
     }
 }

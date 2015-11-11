@@ -104,7 +104,7 @@ namespace Calamari.Tests.Fixtures.Deployment
 
         CalamariResult Clean(string retentionPolicySet, int? days, int? releases)
         {
-            return Invoke(Calamari()
+            return Invoke2(new ArgumentBuilder()
                 .Action("clean")
                 .Argument("retentionPolicySet", retentionPolicySet)
                 .Argument(days.HasValue ? "days" : "releases", days.HasValue ? days.ToString() : releases.ToString()));

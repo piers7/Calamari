@@ -338,7 +338,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
             string feedPassword = "",
             bool forcePackageDownload = false)
         {
-            var calamari = Calamari()
+            var calamari = new ArgumentBuilder()
                 .Action("download-package")
                 .Argument("packageId", packageId)
                 .Argument("packageVersion", packageVersion)
@@ -354,7 +354,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
             if (forcePackageDownload)
                 calamari.Flag("forcePackageDownload");
 
-            return Invoke(calamari);
+            return Invoke2(calamari);
 
         }
 

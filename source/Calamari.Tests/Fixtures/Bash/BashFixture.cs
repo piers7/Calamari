@@ -16,7 +16,7 @@ namespace Calamari.Tests.Fixtures.Bash
         [Test]
         public void ShouldPrintEncodedVariable()
         {
-            var output = Invoke(Calamari()
+            var output = Invoke2(new ArgumentBuilder()
                 .Action("run-script")
                 .Argument("script", GetFixtureResouce("Scripts", "print-encoded-variable.sh")));
 
@@ -27,7 +27,7 @@ namespace Calamari.Tests.Fixtures.Bash
         [Test]
         public void ShouldCreateArtifact()
         {
-            var output = Invoke(Calamari()
+            var output = Invoke2(new ArgumentBuilder()
                 .Action("run-script")
                 .Argument("script", GetFixtureResouce("Scripts", "create-artifact.sh")));
 
@@ -49,7 +49,7 @@ namespace Calamari.Tests.Fixtures.Bash
 
             using (new TemporaryFile(variablesFile))
             {
-                var output = Invoke(Calamari()
+                var output = Invoke2(new ArgumentBuilder()
                     .Action("run-script")
                     .Argument("script", GetFixtureResouce("Scripts", "hello.sh"))
                     .Argument("variables", variablesFile));

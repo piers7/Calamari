@@ -46,7 +46,7 @@ namespace Calamari.Tests.Fixtures.FindPackage
 
         CalamariResult FindPackages(string id, string version, string hash)
         {
-            return Invoke(Calamari()
+            return Invoke2(new ArgumentBuilder()
                 .Action("find-package")
                 .Argument("packageId", id)
                 .Argument("packageVersion", version)

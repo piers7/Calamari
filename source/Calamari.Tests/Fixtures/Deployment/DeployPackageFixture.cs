@@ -1,7 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Xml;
 using Calamari.Deployment;
@@ -9,6 +12,8 @@ using Calamari.Deployment.Conventions;
 using Calamari.Integration.FileSystem;
 using Calamari.Integration.Processes;
 using Calamari.Integration.Iis;
+using Calamari.Integration.Packages;
+using Calamari.Integration.ServiceMessages;
 using Calamari.Tests.Fixtures.Deployment.Packages;
 using Calamari.Tests.Helpers;
 using NUnit.Framework;
@@ -138,6 +143,11 @@ namespace Calamari.Tests.Fixtures.Deployment
             variables.Set("ShouldFail", "yes");
             var result = DeployPackage("Acme.Web");
             result.AssertOutput("I have failed! DeployFailed.ps1");
+
+
+            
+       
+
         }
 
         [Test]
@@ -321,17 +331,21 @@ namespace Calamari.Tests.Fixtures.Deployment
             Assert.That(allErrors, Is.EqualTo(""), allErrors);
         }
 
+
+
+
+
         CalamariResult DeployPackage(string packageName)
         {
             using (var variablesFile = new TemporaryFile(Path.GetTempFileName()))
             using (var acmeWeb = new TemporaryFile(PackageBuilder.BuildSamplePackage(packageName, "1.0.0")))
             {
                 variables.Save(variablesFile.FilePath);
-
-                return Invoke(Calamari()
+                
+                return Invoke2(new ArgumentBuilder()
                     .Action("deploy-package")
                     .Argument("package", acmeWeb.FilePath)
-                    .Argument("variables", variablesFile.FilePath));       
+                    .Argument("variables", variablesFile.FilePath));
             }
         }
 

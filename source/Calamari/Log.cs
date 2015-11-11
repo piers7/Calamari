@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using Calamari.Integration.Processes;
 using Octostache;
@@ -10,20 +11,40 @@ namespace Calamari
     public class Log
     {
         static string stdOutMode;
-        static readonly IndentedTextWriter StdOut;
-        static readonly IndentedTextWriter StdErr;
+        private static IndentedTextWriter stdOut;
+        private static IndentedTextWriter stdErr;
         static readonly object Sync = new object();
+
+        public static void SetOut(TextWriter newOut)
+        {
+            stdOut = new IndentedTextWriter(newOut, "  ");
+        }
+
+        public static void SetError(TextWriter newError)
+        {
+            stdErr = new IndentedTextWriter(newError, "  ");
+        }
+
+        public static TextWriter Out
+        {
+            get { return stdOut.InnerWriter; }
+        }
+
+        public static TextWriter Err
+        {
+            get { return stdErr.InnerWriter; }
+        }
 
         static Log()
         {
-            StdOut = new IndentedTextWriter(Console.Out, "  ");
-            StdErr = new IndentedTextWriter(Console.Error, "  ");
+            SetOut(Console.Out);
+            SetError(Console.Error);
         }
 
         static void SetMode(string mode)
         {
             if (stdOutMode == mode) return;
-            StdOut.WriteLine("##octopus[stdout-" + mode + "]");
+            stdOut.WriteLine("##octopus[stdout-" + mode + "]");
             stdOutMode = mode;
         }
 
@@ -32,7 +53,7 @@ namespace Calamari
             lock (Sync)
             {
                 SetMode("verbose");
-                StdOut.WriteLine(message);
+                stdOut.WriteLine(message);
             }
         }
 
@@ -66,7 +87,7 @@ namespace Calamari
             lock (Sync)
             {
                 SetMode("default");
-                StdOut.WriteLine(message);
+                stdOut.WriteLine(message);
             }
         }
 
@@ -80,7 +101,7 @@ namespace Calamari
             lock (Sync)
             {
                 SetMode("warning");
-                StdOut.WriteLine(message);
+                stdOut.WriteLine(message);
             }
         }
 
@@ -94,7 +115,7 @@ namespace Calamari
             lock (Sync)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                StdErr.WriteLine(message);
+                stdErr.WriteLine(message);
                 Console.ResetColor();
             }
         }

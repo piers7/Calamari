@@ -41,24 +41,25 @@ namespace Calamari.Integration.Processes
             return this;
         }
 
-        string MakeFlag(string flagName)
-        {
-            return "-" + Normalize(flagName);
-        }
-
         public CommandLine PositionalArgument(object argValue)
         {
-            arguments.Add(MakePositionalArg(argValue));
+            arguments.Add(MakeArg(argValue));
             return this;
         }
 
         public CommandLine Argument(string argName, object argValue)
         {
-            arguments.Add(MakeArg(argName, argValue));
+            arguments.Add(MakeFlag(argName));
+            arguments.Add(MakeArg(argValue));
             return this;
         }
 
-        static string MakePositionalArg(object argValue)
+        string MakeFlag(string flagName)
+        {
+            return string.Format("-{0}", Normalize(flagName));
+        }
+
+        static string MakeArg(object argValue)
         {
             var sval = "";
             var f = argValue as IFormattable;
@@ -68,17 +69,6 @@ namespace Calamari.Integration.Processes
                 sval = argValue.ToString();
 
             return Escape(sval);
-        }
-        static string MakeArg(string argName, object argValue)
-        {
-            var sval = "";
-            var f = argValue as IFormattable;
-            if (f != null)
-                sval = f.ToString(null, CultureInfo.InvariantCulture);
-            else if (argValue != null)
-                sval = argValue.ToString();
-
-            return string.Format("-{0} {1}", Normalize(argName), Escape(sval));
         }
 
         public static string Escape(string argValue)

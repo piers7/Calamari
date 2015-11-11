@@ -12,9 +12,7 @@ namespace Calamari.Tests.Fixtures.ScriptCS
         [Test, RequiresDotNet45]
         public void ShouldPrintEncodedVariable()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "PrintEncodedVariable.csx")));
+            var output = RunScript(GetFixtureResouce("Scripts", "PrintEncodedVariable.csx"));
 
             output.AssertZero();
             output.AssertOutput("##octopus[setVariable name='RG9ua2V5' value='S29uZw==']");
@@ -23,9 +21,7 @@ namespace Calamari.Tests.Fixtures.ScriptCS
         [Test, RequiresDotNet45]
         public void ShouldCreateArtifact()
         {
-            var output = Invoke(Calamari()
-                .Action("run-script")
-                .Argument("script", GetFixtureResouce("Scripts", "CreateArtifact.csx")));
+            var output = RunScript(GetFixtureResouce("Scripts", "CreateArtifact.csx"));
 
             output.AssertZero();
             output.AssertOutput("##octopus[createArtifact");
@@ -47,14 +43,23 @@ namespace Calamari.Tests.Fixtures.ScriptCS
 
             using (new TemporaryFile(variablesFile))
             {
-                var output = Invoke(Calamari()
-                    .Action("run-script")
-                    .Argument("script", GetFixtureResouce("Scripts", "Hello.csx"))
-                    .Argument("variables", variablesFile));
+                var output = RunScript(GetFixtureResouce("Scripts", "Hello.csx"), variablesFile);
 
                 output.AssertZero();
                 output.AssertOutput("Hello Paul");
             }
+        }
+
+        private CalamariResult RunScript(string scriptName, string variables = null)
+        {
+            var argBuilder = new ArgumentBuilder()
+                .Action("run-script")
+                .Argument("script", scriptName);
+            if (!string.IsNullOrWhiteSpace(variables))
+            {
+                argBuilder = argBuilder.Argument("variables", variables);
+            }
+            return Invoke2(argBuilder);
         }
     }
 }

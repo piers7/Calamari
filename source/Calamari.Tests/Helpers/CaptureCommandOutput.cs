@@ -7,6 +7,7 @@ using Octostache;
 
 namespace Calamari.Tests.Helpers
 {
+
     public class CaptureCommandOutput : ICommandOutput
     {
         readonly List<string> infos = new List<string>();

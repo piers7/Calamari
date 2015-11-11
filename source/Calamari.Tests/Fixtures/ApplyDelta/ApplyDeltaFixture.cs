@@ -19,7 +19,7 @@ namespace Calamari.Tests.Fixtures.ApplyDelta
 
         CalamariResult ApplyDelta(string basisFile, string fileHash, string deltaFile, string newFile)
         {
-            return Invoke(Calamari()
+            return Invoke2(new ArgumentBuilder()
                 .Action("apply-delta")
                 .Argument("basisFileName", basisFile)
                 .Argument("fileHash", fileHash)

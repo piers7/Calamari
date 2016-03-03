@@ -41,6 +41,9 @@
         public static readonly string RetentionPolicyDaysToKeep = "OctopusRetentionPolicyDaysToKeep";
         public static readonly string PrintEvaluatedVariables = "OctopusPrintEvaluatedVariables";
 
+        public static readonly string SkipFreeDiskSpaceCheck = "OctopusSkipFreeDiskSpaceCheck";
+        public static readonly string FreeDiskSpaceOverrideInMegaBytes = "OctopusFreeDiskSpaceOverrideInMegaBytes";
+
         public static readonly string DeleteScriptsOnCleanup = "OctopusDeleteScriptsOnCleanup";
 
         public static class Tentacle
@@ -81,8 +84,8 @@
             public static readonly string CustomInstallationDirectory = "Octopus.Action.Package.CustomInstallationDirectory";
             public static readonly string CustomInstallationDirectoryShouldBePurgedBeforeDeployment = "Octopus.Action.Package.CustomInstallationDirectoryShouldBePurgedBeforeDeployment";
             public static readonly string AutomaticallyUpdateAppSettingsAndConnectionStrings = "Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings";
-            public static readonly string GenerateAppSettingsJson = "Octopus.Action.Package.GenerateAppSettingsJson";
-            public static readonly string AppSettingsJsonPath = "Octopus.Action.Package.AppSettingsJsonPath";
+            public static readonly string JsonConfigurationVariablesEnabled = "Octopus.Action.Package.JsonConfigurationVariablesEnabled";
+            public static readonly string JsonConfigurationVariablesTargets = "Octopus.Action.Package.JsonConfigurationVariablesTargets";
             public static readonly string AutomaticallyRunConfigurationTransformationFiles = "Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles";
             public static readonly string IgnoreConfigTransformationErrors = "Octopus.Action.Package.IgnoreConfigTransformationErrors";
             public static readonly string SuppressConfigTransformationLogging = "Octopus.Action.Package.SuppressConfigTransformationLogging";
@@ -124,9 +127,12 @@
 
             public static class Azure
             {
-                public static readonly string PowerShellModulePath = "Octopus.Action.Azure.PowerShellModule";
+                public static readonly string UseBundledAzurePowerShellModules = "Octopus.Action.Azure.UseBundledAzurePowerShellModules";
 
                 public static readonly string SubscriptionId = "Octopus.Action.Azure.SubscriptionId";
+                public static readonly string ClientId = "Octopus.Action.Azure.ClientId";
+                public static readonly string TenantId = "Octopus.Action.Azure.TenantId";
+                public static readonly string Password = "Octopus.Action.Azure.Password";
                 public static readonly string CertificateBytes = "Octopus.Action.Azure.CertificateBytes";
                 public static readonly string CertificateThumbprint = "Octopus.Action.Azure.CertificateThumbprint";
 
@@ -149,11 +155,14 @@
                 public static readonly string LogExtractedCspkg = "Octopus.Action.Azure.LogExtractedCspkg";
                 public static readonly string CloudServiceConfigurationFileRelativePath = "Octopus.Action.Azure.CloudServiceConfigurationFileRelativePath";
 
+                public static readonly string ResourceGroupName = "Octopus.Action.Azure.ResourceGroupName";
+                public static readonly string ResourceGroupDeploymentName = "Octopus.Action.Azure.ResourceGroupDeploymentName";
+                public static readonly string ResourceGroupDeploymentMode = "Octopus.Action.Azure.ResourceGroupDeploymentMode";
+
                 public static class Output
                 {
                     public static readonly string AzurePowershellModulePath = "OctopusAzureModulePath";
                     public static readonly string SubscriptionId = "OctopusAzureSubscriptionId";
-                    public static readonly string SubscriptionName = "OctopusAzureSubscriptionName";
                     public static readonly string ModulePath = "OctopusAzureModulePath";
                     public static readonly string ConfigurationFile = "OctopusAzureConfigurationFile";
                     public static readonly string CloudServiceDeploymentSwapped = "OctopusAzureCloudServiceDeploymentSwapped";

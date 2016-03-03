@@ -8,6 +8,19 @@ if (!$isEnabled -or ![Bool]::Parse($isEnabled))
    exit 0
 }
 
+try {
+    Add-PSSnapin WebAdministration
+} catch {
+    try {
+        Import-Module WebAdministration
+    } catch {
+		Write-Warning "We failed to load the WebAdministration module. This usually resolved by doing one of the following:"
+		Write-Warning "1. Install .NET Framework 3.5.1"
+		Write-Warning "2. Upgrade to PowerShell 3.0 (or greater)"
+        throw ($error | Select-Object -First 1)
+    }
+}
+
 $WebSiteName = $OctopusParameters["Octopus.Action.IISWebSite.WebSiteName"]
 $ApplicationPoolName = $OctopusParameters["Octopus.Action.IISWebSite.ApplicationPoolName"]
 $bindingString = $OctopusParameters["Octopus.Action.IISWebSite.Bindings"]
@@ -81,6 +94,14 @@ $supportsSNI = $iisVersion -ge 8
 
 $wsbindings = new-object System.Collections.ArrayList
 
+function Write-IISBinding($message, $bindingObject) {
+	if(-not ($bindingObject -is [PSObject])) {
+		Write-Host "$message @{$([String]::Join("; ", ($bindingObject.Keys | % { return "$($_)=$($bindingObject[$_])" })))}"
+	} else {
+		Write-Host "$message $bindingObject"
+	}
+}
+
 if($bindingString.StartsWith("[{")) {
 	
 	if(Get-Command ConvertFrom-Json -errorAction SilentlyContinue){
@@ -97,7 +118,7 @@ if($bindingString.StartsWith("[{")) {
 		$bindingInformation = $bindingIpAddress+":"+$binding.port+":"+$binding.host
 		
 		if([Bool]::Parse($binding.enabled)) {
-			Write-Host "Found binding: $binding"
+			Write-IISBinding "Found binding: " $binding
 			if ([Bool]::Parse($supportsSNI)) {
 				$wsbindings.Add(@{ 
 					protocol=$binding.protocol;
@@ -117,7 +138,7 @@ if($bindingString.StartsWith("[{")) {
 					thumbprint=$binding.thumbprint.Trim() }) | Out-Null
 			}
 		} else {
-			Write-Host "Ignore binding: $binding"
+			Write-IISBinding "Ignore binding: " $binding
 		}
 	}
 
@@ -166,9 +187,6 @@ if($bindingString.StartsWith("[{")) {
 	}
 }
 
-
-Add-PSSnapin WebAdministration -ErrorAction SilentlyContinue
-Import-Module WebAdministration -ErrorAction SilentlyContinue
 
 # For any HTTPS bindings, ensure the certificate is configured for the IP/port combination
 $wsbindings | where-object { $_.protocol -eq "https" } | foreach-object {
@@ -268,6 +286,7 @@ $sitePath = ("IIS:\Sites\" + $webSiteName)
 
 # Set App Pool
 Execute-WithRetry { 
+	Write-Verbose "Loading Application pool"
 	$pool = Get-Item $appPoolPath -ErrorAction SilentlyContinue
 	if (!$pool) { 
 		Write-Host "Application pool `"$ApplicationPoolName`" does not exist, creating..." 
@@ -296,6 +315,7 @@ Execute-WithRetry {
 
 # Create Website
 Execute-WithRetry { 
+	Write-Verbose "Loading Site"
 	$site = Get-Item $sitePath -ErrorAction SilentlyContinue
 	if (!$site) { 
 		Write-Host "Site `"$WebSiteName`" does not exist, creating..." 
@@ -308,6 +328,7 @@ Execute-WithRetry {
 
 # Assign Website to App Pool
 Execute-WithRetry { 
+	Write-Verbose "Loading Site"
 	$pool = Get-ItemProperty $sitePath -name applicationPool
 	if ($ApplicationPoolName -ne $pool) {
 		Write-Host "Assigning website `"$sitePath`" to application pool `"$ApplicationPoolName`"..."
